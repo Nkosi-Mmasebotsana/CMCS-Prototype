@@ -1,0 +1,48 @@
+﻿@model List<ContractMonthlyClaimSystem.Models.Claim>
+
+@{
+    ViewData["Title"] = "Approver Dashboard";
+    var role = ViewBag.Role as string;
+}
+
+<h2>@role Dashboard — Pending Claims</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ClaimId</th>
+            <th>Lecturer</th>
+            <th>Month</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Submitted</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var c in Model)
+        {
+            <tr>
+                <td>@c.ClaimId</td>
+
+                <!-- ✅ Dummy lecturer name based on LecturerId -->
+                <td>
+                    @(c.LecturerId == 1 ? "Dr. Tumi Nkosi" :
+                        c.LecturerId == 2 ? "Mrs. Kgosi Sepuru" :
+                        "Unknown Lecturer")
+                </td>
+
+                <td>@c.Month</td>
+                <td>R @c.TotalAmount</td>
+                <td>@c.Status</td>
+                <td>@c.SubmittedAt.ToString("yyyy-MM-dd")</td>
+                <td>
+                    <!-- This is just a static link to simulate "View" -->
+                    <a asp-action="Details" asp-route-id="@c.ClaimId" class="btn btn-sm btn-info">
+                        View
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

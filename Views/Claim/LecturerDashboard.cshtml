@@ -1,0 +1,44 @@
+﻿@model List<ContractMonthlyClaimSystem.Models.Claim>
+@{
+	ViewData["Title"] = "Lecturer Dashboard";
+	var lecturer = ViewBag.Lecturer as ContractMonthlyClaimSystem.Models.Lecturer;
+}
+<h2>Lecturer Dashboard</h2>
+
+@if (lecturer != null)
+{
+	<p><strong>@lecturer.FullName</strong> - Hourly Rate: R @lecturer.HourlyRate</p>
+}
+
+
+    <a class="btn btn-primary mb-3" asp-controller="Claim" asp-action="Create" asp-route-lecturerId="@((ViewBag.Lecturer != null) ? ((ContractMonthlyClaimSystem.Models.Lecturer)ViewBag.Lecturer).LecturerId : 101)">Submit New Claim</a>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Claim ID</th>
+                <th>Month</th>
+                <th>Total Hours</th>
+                <th>Total Amount (R)</th>
+                <th>Status</th>
+                <th>Submitted</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var c in Model)
+            {
+                <tr>
+                    <td>@c.ClaimId</td>
+                    <td>@c.Month</td>
+                    <td>@c.TotalHours</td>
+                    <td>@string.Format("{0:N2}", c.TotalAmount)</td>
+                    <td>@c.Status</td>
+                    <td>@c.SubmittedAt.ToString("yyyy-MM-dd")</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@c.ClaimId" class="btn btn-sm btn-info">View</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>

@@ -1,36 +1,43 @@
 ﻿@{
     ViewData["Title"] = "Submit Claim";
+	var lecturerId = ViewBag.LecturerId ?? 101;
 }
 
-<h2>Submit Claim (Prototype)</h2>
+<h2>Submit Claim</h2>
 
-@if (ViewBag.Message != null)
+@if (TempData["Message"] != null)
 {
-    <div class="alert alert-success">@ViewBag.Message</div>
+    <div class="alert alert-success">@TempData["Message"]</div>
 }
 
 <form asp-action="Submit" method="post">
-    <div class="form-group mb-2">
+	<input type="hidden" name="LecturerId" value="@lecturerId" />
+    <div class= "mb-2">
         <label>Claim Month</label>
         <input class="form-control" type="text" name="Month" placeholder="e.g. September 2025" />
     </div>
 
-    <div class="form-group mb-2">
-        <label>Total Hours (simulation)</label>
-        <input class="form-control" type="number" name="Hours" />
+    <div class="mb-2">
+        <label>Total Hours</label>
+        <input class="form-control" type="number" name="Total Hours" step="0.1" />
     </div>
 
-    <div class="form-group mb-2">
-        <label>Hourly Rate (simulation)</label>
-        <input class="form-control" type="number" name="Rate" step="0.01" />
+    <div class="mb-2">
+        <label>Hourly Rate</label>
+        <input class="form-control" type="number" name="Hourly Rate" step="0.01" />
     </div>
 
-    <div class="form-group mb-3">
+    <div class="mb-2">
+        <label>Notes</label>
+        <textarea name="Notes" class="form-control" rows="3"></textarea>
+    </div>
+
+    <div class=" mb-2">
         <label>Supporting Documents (UI only)</label>
         <input class="form-control" type="file" disabled />
-        <small class="form-text text-muted">File upload disabled in prototype</small>
+        <small class="text-muted">File uploading disabled in prototype</small>
     </div>
 
     <button type="submit" class="btn btn-success">Submit Claim</button>
-    <a asp-controller="Claim" asp-action="Index" class="btn btn-secondary ms-2">Cancel</a>
+    <a asp-controller="Claim" asp-action="LecturerDashboard" asp-route-lecturerId="@lecturerId" class="btn btn-secondary ms-2">Cancel</a>
 </form>

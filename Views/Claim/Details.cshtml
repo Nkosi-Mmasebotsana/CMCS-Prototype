@@ -11,24 +11,76 @@
 }
 
 <dl class="row">
-    <dt class="col-sm-3">Claim ID</dt>
-    <dd class="col-sm-9">@Model.ClaimId</dd>
-
-    <dt class="col-sm-3">Month</dt>
-    <dd class="col-sm-9">@Model.Month</dd>
-
-    <dt class="col-sm-3">Total Amount</dt>
-    <dd class="col-sm-9">R @Model.TotalAmount</dd>
-
-    <dt class="col-sm-3">Status</dt>
-    <dd class="col-sm-9">@Model.Status</dd>
-
-    <dt class="col-sm-3">Submitted</dt>
-    <dd class="col-sm-9">@Model.SubmittedAt.ToString("yyyy-MM-dd HH:mm")</dd>
+    <dt class="col-sm-3">Claim ID</dt><dd class="col-sm-9">@Model.ClaimId</dd>
+    <dt class="col-sm-3">Month</dt><dd class="col-sm-9">@Model.Month</dd>
+    <dt class="col-sm-3">Total Hours</dt><dd class="col-sm-9">@Model.TotalHours</dd>
+    <dt class="col-sm-3">Total Amount</dt><dd class="col-sm-9">R @string.Format("{0:N2}", Model.TotalAmount)</dd>
+    <dt class="col-sm-3">Status</dt><dd class="col-sm-9">@Model.Status</dd>
+    <dt class="col-sm-3">Submitted</dt><dd class="col-sm-9">@Model.SubmittedAt.ToString("yyyy-MM-dd")</dd>
+    <dt class="col-sm-3">Approved By</dt><dd class="col-sm-9">@Model.ApprovedBy?.ToString() ?? "—"</dd>
 </dl>
 
-<form asp-action="Approve" method="post">
+
+<h4>Claim Lines</h4>
+@if (Model.ClaimLines != null && Model.ClaimLines.Count > 0)
+{
+    <table class="table">
+        <thead><tr><th>Description</th><th>Hours</th><th>Rate</th><th>Subtotal</th></tr></thead>
+        <tbody>
+            @foreach (var l in Model.ClaimLines)
+            {
+                <tr>
+                    <td>@l.Description</td>
+                    <td>@l.HoursWorked</td>
+                    <td>R @l.RatePerHour</td>
+                    <td>R @l.Subtotal</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No line items to display.</p>
+}
+
+
+<h4>Supporting Documents</h4>
+@if (Model.Documents != null && Model.Documents.Count > 0)
+{
+    <ul>
+        @foreach (var d in Model.Documents)
+        {
+            <li>@d.FileName (uploaded @d.UploadedAt.ToString("yyyy-MM-dd"))</li>
+        }
+    </ul>
+}
+else
+{
+    <p>No documents attached.</p>
+}
+
+<hr />
+
+<!-- Approver actions (simulate) -->
+<form asp-action="ApproveSimulation" method="post" class="d-inline">
     <input type="hidden" name="id" value="@Model.ClaimId" />
-    <button type="submit" class="btn btn-success">Approve Claim</button>
-    <a asp-controller="Claim" asp-action="Index" class="btn btn-secondary ms-2">Back to Claims</a>
+    <select name="approverId" class="form-select d-inline w-auto me-2">
+        @foreach (var u in ViewBag.Users as List<ContractMonthlyClaimSystem.Models.User>)
+        {
+            <option value="@u.UserId">@u.FullName (@u.Role)</option>
+        }
+    </select>
+    <button type="submit" class="btn btn-success">Approve (Simulate)</button>
 </form>
+
+<form asp-action="RejectSimulation" method="post" class="d-inline ms-2">
+    <input type="hidden" name="id" value="@Model.ClaimId" />
+    <input type="hidden" name="approverId" value="1" />
+    <input type="text" name="comment" placeholder="Rejection comment (simulation)" class="form-control d-inline w-50 me-2" />
+    <button type="submit" class="btn btn-danger">Reject (Simulate)</button>
+</form>
+
+<p class="mt-3">
+    <a asp-controller="Claim" asp-action="LecturerDashboard" asp-route-lecturerId="@Model.LecturerId" class="btn btn-secondary">Back</a>
+</p>
